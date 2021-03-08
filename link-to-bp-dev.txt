@@ -1,0 +1,1 @@
+https://github.com/github/c2c-actions/blob/master/docs/ghes/bp-dev.md
