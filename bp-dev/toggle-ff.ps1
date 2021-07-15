@@ -3,12 +3,26 @@ param(
   [Parameter(Mandatory=$True)]
   [string]$FeatureName)
 
-if (Get-Command 'Get-FeatureFlag')
+$ErrorActionPreference = 'Stop'
+
+if ((Get-Command 'Get-FeatureFlag' -ErrorAction Ignore))
 {
-    echo hi #lr actions -command "echo hello"
+    $feature = Get-FeatureFlag -FeatureName $FeatureName
+    Write-Output $feature
+    if ($feature.EffectiveState -eq 'Off')
+    {
+        $newState = 'On'
+    }
+    else
+    {
+        $newState = 'Off'
+    }
+
+    Set-FeatureFlag -FeatureName $FeatureName -State $newState
+    Get-FeatureFlag -FeatureName $FeatureName
 }
 else
 {
     $scriptPath = $MyInvocation.MyCommand.Path
-    lr actions -command "echo your script path is $scriptPath"
+    lr actions -command "$scriptPath -FeatureName $FeatureName"
 }
