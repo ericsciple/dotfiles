@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
-  [string]$Since = '15m'
+  [string]$Since = '15m',
+  [int[]]$Tracepoint = @()
 )
 
 $ErrorActionPreference = 'Stop'
@@ -37,5 +38,21 @@ if ($actionsJobAgent.Count -ne 1)
 {
     throw "Expected exactly one running actions-job-agent pod; found $($actionsJobAgent.Count)"
 }
-kubectl logs "--since=$Since" "$($actionsApiServer[0])"
-kubectl logs "--since=$Since" "$($actionsJobAgent[0])"
+
+if ($Tracepoint.Count -gt 0)
+{
+    $grepArgs = @()
+    foreach ($t in $Tracepoint)
+    {
+        $grepArgs += '-e'
+        $grepArgs += $t
+    }
+
+    kubectl logs "--since=$Since" "$($actionsApiServer[0])" | grep @grepArgs
+    kubectl logs "--since=$Since" "$($actionsJobAgent[0])" | grep @grepArgs
+}
+else
+{
+    kubectl logs "--since=$Since" "$($actionsApiServer[0])"
+    kubectl logs "--since=$Since" "$($actionsJobAgent[0])"
+}
