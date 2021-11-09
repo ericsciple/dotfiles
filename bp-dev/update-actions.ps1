@@ -1,6 +1,6 @@
 $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
 
-deploy actions.l2 -UseExistingDatabases
+deploy actions -UseExistingDatabases
 
 $stopwatch.Stop()
 Write-Host ""
